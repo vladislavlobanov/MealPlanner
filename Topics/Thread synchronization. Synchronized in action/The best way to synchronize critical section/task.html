@@ -1,0 +1,44 @@
+<div class="step-text">
+<p></p>
+<p>What method is the best way to synchronize?</p>
+<pre><code class="language-java">class FactorialHolder {
+    private final FactorialService fs;
+    private final LongRunningService lrs;
+    private long total;
+
+    public FactorialHolder(FactorialService fs, LongRunningService lrs) {
+        this.fs = fs;
+        this.lrs = lrs;
+    }
+
+    public void synchronized calcAndSum1(int n) {
+        this.total += fs.calc(n);
+        lrs.slowMethod();
+    }
+
+    public void calcAndSum2(int n) {
+        synchronized(this) {
+            this.total += fs.calc(n);
+            lrs.slowMethod();
+        }
+    }
+
+    public void calcAndSum3(int n) {
+        long result;
+        synchronized(this) {
+            result = fs.calc(n);
+        }
+        lrs.slowMethod();
+        this.total += result;
+    }
+
+    public void calcAndSum4(int n) {
+        long result;
+        synchronized(FactorialHolder.class) {
+            result = fs.calc(n);
+        }
+        lrs.slowMethod();
+        this.total += result;
+    }
+}</code></pre>
+</div>

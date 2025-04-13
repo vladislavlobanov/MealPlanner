@@ -1,0 +1,96 @@
+<div class="step-text">
+<p>The <code class="language-java">Timer</code> class is used when we want to perform time-related activities, such as scheduling a task to run at a specific time or repeating a task after a specific time interval. When we create a <a class="theory-lookup not-relevant" href="/learn/step/0" rel="noopener noreferrer nofollow" target="_blank" title="In Java, a timer is a class used to perform time-related activities, such as scheduling a task to run at a specific time or repeating a task after a specific time interval. | When a timer is created, it is told which code to run using a class called TimerTask. The TimerTask defines the code that is executed when the timer is triggered. This code is run in a different thread than the code that created the timer. To implement a timer, we will create a Timer with code to run when the timer is triggered. The example above demonstrates how we can create a timer that prints hello ! each time the timer is triggered. Once the timer is implemented, we can set up a timer to run the task at the next scheduled time. This is ideal for situations where we are looking for a file that does not exist yet. If the file is not found, we can catch the exception and try again later when the file might have become available. Additionally, we can cancel a timer if it encounters an exception by using the method discussed earlier.">timer</a>, we tell it which code to run using a class called <code class="language-java">TimerTask.</code> This class implements a method called <code class="language-java">run</code>, which defines the code that is executed when the <code class="language-java">Timer</code> is triggered. This code is run in a different thread than the code that created the <code class="language-java">Timer.</code> To implement a <code class="language-java">Timer</code>, we will create a <code class="language-java">TimerTask </code>with code to run when the <code class="language-java">Timer</code> is triggered. The example below demonstrates how we can create a <code class="language-java">TimerTask</code> that prints "Hello!" each time the <code class="language-java">Timer</code> is triggered.</p>
+<pre><code class="language-java">import java.util.Timer;
+import java.util.TimerTask;
+
+class TimerCode extends TimerTask {
+    public void run() {
+        System.out.println("Hello!");
+    }
+}</code></pre>
+<p>Once we have implemented our <code class="language-java">TimerTask</code>, we can set up a <code class="language-java">Timer</code> to run the task as required.</p>
+<h5 id="timer-scheduling">Timer scheduling</h5>
+<p>We can schedule a <code class="language-java">TimerTask</code> to execute using the <code class="language-java">schedule</code> method of a <code class="language-java">Timer</code> object. This method has many different modes, but to start, we will look at how to schedule a task to run once at a specific date and time.</p>
+<p>Suppose we have some code we wish to run 2 seconds after the program starts. To do so, we need to get the current date and time and add 2 seconds to it. Once we have that time, we can use our <code class="language-java">Timer</code> to schedule the code execution. The code below shows how this can be done using the <code class="language-java">TimerTask</code> we defined previously.</p>
+<pre><code class="language-java">public class Main {
+    public static void main(String[] args) {
+        Timer timer = new Timer();
+        TimerTask task = new TimerCode();
+
+        LocalDateTime timeToExecute = LocalDateTime.now().plusSeconds(2);
+        Date execTime = Date.from(timeToExecute.atZone(ZoneId.systemDefault()).toInstant());
+        timer.schedule(task, execTime);
+    }
+}</code></pre>
+<p>In this example, we first create a <code class="language-java">LocalDateTime</code> object, which stores the current time on the user's system plus two seconds. As such, we obtain a time that is two seconds after the time the application was started. We then convert it to a <code class="language-java">Date</code> object so it can be used with the <code class="language-java">schedule</code> method. When we convert the <code class="language-java">LocalDateTime</code> to a <code class="language-java">Date</code>, we specify the timezone using <code class="language-java">ZoneId.systemDefault()</code>. This will ensure that the <code class="language-java">Date</code> matches the timezone of the person running the application. This code results in our text "Hello" printing to the screen 2 seconds after the application starts.</p>
+<h5 id="fixed-rate-scheduling">Fixed-rate scheduling</h5>
+<p>In the last section, we saw how we could use the <code class="language-java">schedule</code> method to run a task once at a specific time and date. In this section, we will see how we can create a task that starts at a particular time and date and then repeats at a fixed interval.</p>
+<p>There are two ways in which we can set up a fixed-rate schedule. The first is to specify a delay from when the program starts and an interval at which the task repeats. For example, if we wanted to start the task 2 seconds after the program begins and repeat it every 3 seconds, we would use the code shown below.</p>
+<pre><code class="language-java">public class Main {
+    public static void main(String[] args) {
+        Timer timer = new Timer();
+        TimerTask task = new TimerCode();
+
+        timer.schedule(task, 2000, 3000);
+    }
+}</code></pre>
+<p>Note that the <code class="language-java">schedule</code> method expects times in milliseconds, so we use 2000 milliseconds to represent 2 seconds and 3000 milliseconds for 3 seconds. If we wanted to start the execution of our code at a specific date and time like before, we could replace the second argument with a <code class="language-java">Date</code> object. The code below shows how we can execute our task at fixed intervals of 4 seconds starting at a specific time.</p>
+<pre><code class="language-java">public class Main {
+    public static void main(String[] args) {
+        Timer timer = new Timer();
+        TimerTask task = new TimerCode();
+
+        LocalDateTime timeToExecute = LocalDateTime.now().plusSeconds(2);
+        Date execTime = Date.from(timeToExecute.atZone(ZoneId.systemDefault()).toInstant());
+        timer.schedule(task, execTime, 4000);
+    }
+}</code></pre>
+<h5 id="canceling-and-exceptions">Canceling and exceptions</h5>
+<p>Once we schedule a fixed-rate <code class="language-java">TimerTask</code>, we might eventually want to stop it. To do so, we need to call the <code class="language-java">cancel</code> method of the <code class="language-java">TimerTask</code> we wish to stop.</p>
+<pre><code class="language-java">public class Main {
+    public static void main(String[] args) {
+        Timer timer = new Timer();
+        TimerTask task = new TimerCode();
+
+        timer.schedule(task, 2000, 3000);
+        task.cancel();
+    }
+}</code></pre>
+<p>We can also use the <code class="language-java">cancel</code> method of our <code class="language-java">Timer</code> object to cancel all tasks associated with the <code class="language-java">Timer</code>. This is ideal if you wish to cancel multiple tasks at the same time. The following example demonstrates how we can use the <code class="language-java">cancel</code> method with our <code class="language-java">Timer</code> object.</p>
+<pre><code class="language-java">public class Main {
+    public static void main(String[] args) {
+        Timer timer = new Timer();
+        TimerTask task = new TimerCode();
+        TimerTask task2 = new TimerCode();
+
+        timer.schedule(task2, 0, 2000);
+        timer.schedule(task, 0, 1000);
+        timer.cancel();
+    }
+}</code></pre>
+<p>In this example, <code class="language-java">task</code> and <code class="language-java">task2</code> are stopped as soon as <code class="language-java">timer.cancel()</code> is called.</p>
+<p>In addition to canceling tasks, we want to consider what happens if a task crashes unexpectedly due to an exception. If we created a <code class="language-java">TimerTask</code> that throws an exception, we would see that the <code class="language-java">TimerTask</code> stops running, and our program crashes when the exception is thrown. Ideally, we would like to be able to recover from any occurring exceptions. To that end, we can wrap our <code class="language-java">TimerTask </code>code in a try-catch block.</p>
+<pre><code class="language-java">class TimerCode extends TimerTask {
+    public void run() {
+        try {
+            throw new IllegalArgumentException();
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+}</code></pre>
+<p>When this code throws the exception, it will print a message and run again at the next scheduled time. This is ideal for situations where we are looking for a file that doesn't exist yet. If the file is not found, we catch the exception and try again later when the file might have become available. Sometimes, we want to cancel a <code class="language-java">TimerTask</code> if it encounters an exception. To do so, we can use the <code class="language-java">cancel</code> method discussed earlier.</p>
+<pre><code class="language-java">class TimerCode extends TimerTask {
+    public void run() {
+        try {
+            throw new IllegalArgumentException();
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            this.cancel();
+        }
+    }
+}</code></pre>
+<p>With this code, our <code class="language-java">TimerTask</code> will cancel as soon as an exception occurs.</p>
+<h5 id="conclusion">Conclusion</h5>
+<p>In this topic, we've covered the main points of creating <code class="language-java">Timer</code>s and scheduling <code class="language-java">TimerTask</code>s. We also saw how we could handle exceptions caught within <code class="language-java">TimerTask</code> code. You now know how to apply timers in your code!</p>
+</div>

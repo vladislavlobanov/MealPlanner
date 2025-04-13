@@ -1,0 +1,15 @@
+<div class="step-text">
+<p></p>
+<p>For what reason in the case <code class="language-java">getValue</code> method is synchronized?</p>
+<pre><code class="language-java">class SynchronizedCounter {
+    private int count = 0;
+
+    public synchronized void increment() {
+        count++;
+    }
+
+    public synchronized int getValue() {
+        return count;
+    }
+}</code></pre>
+</div>
